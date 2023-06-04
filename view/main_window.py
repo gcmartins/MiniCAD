@@ -1,16 +1,17 @@
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QMainWindow, QToolTip, QAction, QStatusBar, QToolBar
+from PyQt5.QtWidgets import QMainWindow, QToolTip, QAction, QStatusBar, QToolBar, QSplitter
 
+from geometry.base_geometry import BaseGeometry
 from service.geometry_service import createSphere, createCylinder, UnionGeometries, createCube
-from view.components.vtk_window import VtkWindow
+from view.components.occ_window import OCCWindow
+from view.components.tree_widget import TreeWidget
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initializeUI()
-        self.geometries = []
         self.geo_sources = []
 
     def initializeUI(self):
@@ -29,26 +30,31 @@ class MainWindow(QMainWindow):
         """
         Create the canvas object that inherits from QFrame.
         """
-        self.canvas = VtkWindow(self)
+        self.canvas = OCCWindow(self)
+
+        # Create a tree widget and add some items to it
+        self.tree = TreeWidget(self)
+
+        # Create a splitter widget to contain the tree widget and 3D viewer widget
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(self.tree)
+        splitter.addWidget(self.canvas)
+        splitter.setSizes([200, 600])
+
         # Set the main window's central widget
-        self.setCentralWidget(self.canvas)
+        self.setCentralWidget(splitter)
 
     def createMenu(self):
         """
         Set up the menu bar and status bar.
         """
         # Create file menu actions
-        # new_act = self.createMenuAction(label='New canvas', shortcut='Ctrl+N', action=self.canvas.newCanvas)
-        # save_file_act = self.createMenuAction(label='Save File', shortcut='Ctrl+S', action=self.canvas.saveFile)
         quit_act = self.createMenuAction(label='Quit', shortcut='Ctrl+Q', action=self.close)
         # Create the menu bar
         menu_bar = self.menuBar()
         menu_bar.setNativeMenuBar(False)
         # Create file menu and add actions
         file_menu = menu_bar.addMenu('File')
-        # file_menu.addAction(new_act)
-        # file_menu.addAction(save_file_act)
-        # file_menu.addSeparator()
         file_menu.addAction(quit_act)
         # Create tools menu and add actions
         self.status_bar = QStatusBar()
@@ -96,34 +102,30 @@ class MainWindow(QMainWindow):
         tool_bar.addAction(action)
 
     def AddSphere(self):
-        actor, source = createSphere()
-        self.canvas.AddGeometry(actor)
-        self.AddGeometry(actor, source)
+        source = createSphere()
+        self.AddGeometry(source)
 
     def AddCylinder(self):
-        actor, source = createCylinder()
-        self.canvas.AddGeometry(actor)
-        self.AddGeometry(actor, source)
+        source = createCylinder()
+        self.AddGeometry(source)
 
     def AddCube(self):
-        actor, source = createCube()
-        self.canvas.AddGeometry(actor)
-        self.AddGeometry(actor, source)
+        source = createCube()
+        self.AddGeometry(source)
 
-    def AddGeometry(self, actor, source):
-        self.geometries.append(actor)
+    def AddGeometry(self, source: BaseGeometry):
+        self.canvas.AddGeometry(source)
         self.geo_sources.append(source)
+        self.tree.AddGeometryItem(source)
 
     def DeleteGeometries(self):
-        for geometry in self.geometries:
+        for geometry in self.geo_sources:
             self.canvas.RemoveGeometry(geometry)
-        self.geometries = []
+            self.tree.RemoveGeometryItem(geometry)
         self.geo_sources = []
 
     def UnionGeometries(self):
-        actor, source = UnionGeometries(self.geo_sources)
+        source = UnionGeometries(self.geo_sources)
         self.DeleteGeometries()
-        self.canvas.AddGeometry(actor)
-        self.AddGeometry(actor, source)
-        print(self.geometries)
+        self.AddGeometry(source)
 
