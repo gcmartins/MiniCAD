@@ -2,23 +2,23 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QToolTip, QAction, QStatusBar, QToolBar, QSplitter
 
-from geometry.base_geometry import BaseGeometry
-from service.geometry_service import createSphere, createCylinder, UnionGeometries, createCube
+from service.geometry_service import GeometryCollection
 from view.components.occ_window import OCCWindow
-from view.components.tree_widget import TreeWidget
+from view.components.tree_widget import GeometryTreeWidget
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.geometry_collection = GeometryCollection()
         self.initializeUI()
-        self.geo_sources = []
 
     def initializeUI(self):
         """
         Initialize the window and display its contents to the screen.
         """
         # self.setMinimumSize(700, 600)
+        self.showMaximized()
         self.setWindowTitle('Python CAD')
         QToolTip.setFont(QFont('Helvetica', 12))
         self.createCanvas()
@@ -30,10 +30,10 @@ class MainWindow(QMainWindow):
         """
         Create the canvas object that inherits from QFrame.
         """
-        self.canvas = OCCWindow(self)
+        self.canvas = OCCWindow(self, self.geometry_collection)
 
         # Create a tree widget and add some items to it
-        self.tree = TreeWidget(self)
+        self.tree = GeometryTreeWidget(self, self.geometry_collection)
 
         # Create a splitter widget to contain the tree widget and 3D viewer widget
         splitter = QSplitter(Qt.Horizontal)
@@ -102,30 +102,17 @@ class MainWindow(QMainWindow):
         tool_bar.addAction(action)
 
     def AddSphere(self):
-        source = createSphere()
-        self.AddGeometry(source)
+        self.geometry_collection.createSphere()
 
     def AddCylinder(self):
-        source = createCylinder()
-        self.AddGeometry(source)
+        self.geometry_collection.createCylinder()
 
     def AddCube(self):
-        source = createCube()
-        self.AddGeometry(source)
-
-    def AddGeometry(self, source: BaseGeometry):
-        self.canvas.AddGeometry(source)
-        self.geo_sources.append(source)
-        self.tree.AddGeometryItem(source)
+        self.geometry_collection.createCube()
 
     def DeleteGeometries(self):
-        for geometry in self.geo_sources:
-            self.canvas.RemoveGeometry(geometry)
-            self.tree.RemoveGeometryItem(geometry)
-        self.geo_sources = []
+        pass
 
     def UnionGeometries(self):
-        source = UnionGeometries(self.geo_sources)
-        self.DeleteGeometries()
-        self.AddGeometry(source)
+        self.geometry_collection.unionGeometries()
 

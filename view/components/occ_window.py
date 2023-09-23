@@ -2,6 +2,7 @@ from OCC.Display.backend import load_backend
 from PyQt5.QtGui import QResizeEvent
 
 from geometry.base_geometry import BaseGeometry
+from service.geometry_service import GeometryCollection
 
 load_backend('qt-pyqt5')
 from OCC.Display import qtDisplay
@@ -10,24 +11,22 @@ from PyQt5.QtWidgets import QWidget
 
 class OCCWindow(QWidget):
 
-    def __init__(self, parent):
+    def __init__(self, parent, geometry_collection: GeometryCollection):
         super().__init__(parent=parent)
         self.canvas = qtDisplay.qtViewer3d(self)
         self.canvas.InitDriver()
+        self.canvas.resize(self.width(), self.height())
         self.display = self.canvas._display
-        self.source_to_shape = {}
+        self._geometry_collection = geometry_collection
+        self._geometry_collection.on_geometries_change.connect(self.updateView)
 
-    def AddGeometry(self, source: BaseGeometry):
-        shape = self.display.DisplayShape(source.GetShape())[0]
-        self.source_to_shape.update({source: shape})
-        self._UpdateView()
+    def AddItem(self, source: BaseGeometry):
+        self.display.DisplayShape(source.GetShape())
 
-    def RemoveGeometry(self, source: BaseGeometry):
-        shape = self.source_to_shape.pop(source)
-        self.display.Context.Erase(shape, True)
-        self._UpdateView()
-
-    def _UpdateView(self):
+    def updateView(self):
+        self.display.EraseAll()
+        for geo in self._geometry_collection:
+            self.AddItem(geo)
         self.display.FitAll()
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
