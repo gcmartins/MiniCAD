@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import Qt, QPoint, QRect
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QColor
-from PyQt5.QtWidgets import QLabel, QColorDialog, QFileDialog
+from PySide2.QtCore import Qt, QPoint, QRect
+from PySide2.QtGui import QPixmap, QPainter, QPen, QColor
+from PySide2.QtWidgets import QLabel, QColorDialog, QFileDialog
 
 
 class DrawingCanvas(QLabel):

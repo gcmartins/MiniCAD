@@ -1,5 +1,5 @@
 import vtk
-from PyQt5.QtWidgets import QFrame, QVBoxLayout
+from PySide2.QtWidgets import QFrame, QVBoxLayout
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkFiltersExtraction import vtkExtractEdges
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleTrackballCamera

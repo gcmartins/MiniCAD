@@ -1,6 +1,6 @@
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide2.QtCore import QObject, Signal
 
 from geometry.base_geometry import BaseGeometry
 from geometry.geometry_models import Sphere, Cylinder, Cube, Union
@@ -8,7 +8,7 @@ from geometry.geometry_models import Sphere, Cylinder, Cube, Union
 
 
 class GeometryCollection(QObject):
-    on_geometries_change = pyqtSignal()
+    on_geometries_change = Signal()
 
     def __init__(self):
         super(GeometryCollection, self).__init__()

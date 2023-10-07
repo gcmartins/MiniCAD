@@ -1,12 +1,12 @@
 from OCC.Display.backend import load_backend
-from PyQt5.QtGui import QResizeEvent
+from PySide2.QtGui import QResizeEvent
 
 from geometry.base_geometry import BaseGeometry
 from service.geometry_service import GeometryCollection
 
-load_backend('qt-pyqt5')
+load_backend('qt-pyside2')
 from OCC.Display import qtDisplay
-from PyQt5.QtWidgets import QWidget
+from PySide2.QtWidgets import QWidget
 
 
 class OCCWindow(QWidget):

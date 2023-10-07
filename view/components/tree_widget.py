@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QPushButton
+from PySide2.QtWidgets import QTreeWidget, QTreeWidgetItem, QPushButton
 from attrs import asdict
 
 from geometry.base_geometry import BaseGeometry

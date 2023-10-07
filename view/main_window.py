@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QMainWindow, QToolTip, QAction, QStatusBar, QToolBar, QSplitter
+from PySide2.QtCore import QSize, Qt
+from PySide2.QtGui import QFont, QIcon
+from PySide2.QtWidgets import QMainWindow, QToolTip, QAction, QStatusBar, QToolBar, QSplitter
 
 from service.geometry_service import GeometryCollection
 from view.components.occ_window import OCCWindow
