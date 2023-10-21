@@ -3,6 +3,8 @@ from PySide2.QtGui import QFont, QIcon
 from PySide2.QtWidgets import QMainWindow, QToolTip, QAction, QStatusBar, QToolBar, QSplitter
 
 from service.geometry_service import GeometryCollection
+from service.selection_service import SelectionService
+from view.components.geometry_editor import GeometryEditor
 from view.components.occ_window import OCCWindow
 from view.components.tree_widget import GeometryTreeWidget
 
@@ -11,6 +13,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.geometry_collection = GeometryCollection()
+        self.selection_service = SelectionService()
         self.initializeUI()
 
     def initializeUI(self):
@@ -33,13 +36,21 @@ class MainWindow(QMainWindow):
         self.canvas = OCCWindow(self, self.geometry_collection)
 
         # Create a tree widget and add some items to it
-        self.tree = GeometryTreeWidget(self, self.geometry_collection)
+        self.tree = GeometryTreeWidget(self, self.geometry_collection, self.selection_service)
+
+        self.editor = GeometryEditor(self, selection_service=self.selection_service)
 
         # Create a splitter widget to contain the tree widget and 3D viewer widget
         splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(self.tree)
+
+        v_splitter = QSplitter(Qt.Vertical)
+        v_splitter.addWidget(self.tree)
+        v_splitter.addWidget(self.editor)
+        v_splitter.setSizes([700, 300])
+
+        splitter.addWidget(v_splitter)
         splitter.addWidget(self.canvas)
-        splitter.setSizes([200, 600])
+        splitter.setSizes([350, 650])
 
         # Set the main window's central widget
         self.setCentralWidget(splitter)

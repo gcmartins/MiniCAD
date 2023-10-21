@@ -2,22 +2,18 @@ from typing import Tuple
 
 from OCC.Core.BRepAlgoAPI import BRepAlgoAPI_Fuse
 from OCC.Core.BRepPrimAPI import BRepPrimAPI_MakeSphere, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakeBox
-from attr import Factory
-from attrs import define
 
 from geometry.base_geometry import BaseGeometry
 
 
-@define
 class Sphere(BaseGeometry):
-    radius: float = 1
+    radius: float = 1.0
 
     def Draw(self):
         shape = BRepPrimAPI_MakeSphere(self.radius).Shape()
         return shape
 
 
-@define
 class Cylinder(BaseGeometry):
     radius: float = 1.0
     height: float = 1.0
@@ -27,7 +23,6 @@ class Cylinder(BaseGeometry):
         return shape
 
 
-@define
 class Cube(BaseGeometry):
     dx: float = 1.0
     dy: float = 1.0
@@ -38,9 +33,8 @@ class Cube(BaseGeometry):
         return shape
 
 
-@define
 class Union(BaseGeometry):
-    geometries: Tuple[BaseGeometry] = Factory(Tuple[BaseGeometry])
+    geometries: Tuple[BaseGeometry] = tuple()
 
     def Draw(self):
         shapes = [geo.GetShape() for geo in self.geometries]
