@@ -4,7 +4,7 @@ from PySide2.QtGui import QResizeEvent
 from geometry.base_geometry import BaseGeometry
 from service.geometry_service import GeometryCollection
 
-load_backend('qt-pyside2')
+load_backend('pyside2')
 from OCC.Display import qtDisplay
 from PySide2.QtWidgets import QWidget
 
