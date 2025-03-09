@@ -24,18 +24,25 @@ class GeometryEditor(QWidget):
             h_layout = QHBoxLayout()
             label = QLabel(key.capitalize())
             h_layout.addWidget(label)
+
             if isinstance(value, tuple):
                 for index, v in enumerate(value):
                     editor = QLineEdit(str(v))
-                    editor.setValidator(QDoubleValidator())
-                    editor.returnPressed.connect(_SetGeometryData(geometry, key, editor, index))
+                    validator = QDoubleValidator()
+                    validator.setNotation(QDoubleValidator.StandardNotation)
+                    validator.setDecimals(10) 
+                    editor.setValidator(validator)
+                    editor.textChanged.connect(_SetGeometryData(geometry, key, editor, index))
                     h_layout.addWidget(editor)
 
             else:
                 editor = QLineEdit(str(value))
                 if isinstance(value, float):
-                    editor.setValidator(QDoubleValidator())
-                editor.returnPressed.connect(_SetGeometryData(geometry, key, editor))
+                    validator = QDoubleValidator()
+                    validator.setNotation(QDoubleValidator.StandardNotation)
+                    validator.setDecimals(10)
+                    editor.setValidator(validator)
+                editor.textChanged.connect(_SetGeometryData(geometry, key, editor))
                 h_layout.addWidget(editor)
 
             v_layout.addLayout(h_layout)
@@ -46,15 +53,18 @@ class GeometryEditor(QWidget):
 def _SetGeometryData(geometry, attribute, editor, index=None):
 
     def callback_function():
+        text = editor.text()
+        if not text:
+            return
+
         value = getattr(geometry, attribute)
         if isinstance(value, tuple) and index is not None:
             value = list(value)
-            value[index] = float(editor.text())
+            value[index] = float(text)
             setattr(geometry, attribute, tuple(value))
         elif isinstance(value, str):
-            setattr(geometry, attribute, editor.text())
+            setattr(geometry, attribute, text)
         elif isinstance(value, float):
-            setattr(geometry, attribute, float(editor.text()))
+            setattr(geometry, attribute, float(text))
 
     return callback_function
-
